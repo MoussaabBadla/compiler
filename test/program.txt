@@ -1,0 +1,28 @@
+PROGRAMME
+VAR x, y, z ;
+CONST pi = 3.14;
+
+BEGIN
+    x = 10;
+    y = x + 5;
+    z = x * (y - 3);
+
+    IF x > y THEN
+        z = z - 1;
+    ELSE
+        z = z + 1;
+    ENDIF
+
+    FOR i = 1 TO 10 DO
+        WriteIn(i);
+    END FOR
+
+    WHILE x != y DO
+        x = x + 1;
+    END WHILE
+
+    x = x / 2;
+    y = x && z || !y;
+    x = -x;
+
+END.
