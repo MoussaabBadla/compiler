@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "synt.tab.h"
+#include "ts.h"
 
 
 
@@ -16,6 +18,9 @@ int nb_colonne = 1;
 void gestion_erreur(const char *type_erreur, const char *entite) {
     printf("%s, line %d, column %d: %s\n", type_erreur, nb_ligne, nb_colonne, entite);
 }
+
+extern FILE *yyin;  
+
 %}
 
 %option noyywrap
@@ -136,24 +141,4 @@ ESPACE_TAB_NL    [ \t\n]
 %%
 
 
-
-// CHECK THE PROGRAM HAS AN ARGUMENT, if not, it shows the correct usage, and opens the file
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
-        return 1;
-    }
-    yyin = fopen(argv[1], "r");
-    if (yyin == NULL) {
-        perror("Failed to open file");
-        return 1;
-    }
-
-
-
-
-    yylex();  
-    fclose(yyin);  
-    return 0;
-}
 

@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include "ts.h"
+
+
 
 
 extern FILE *yyin;  
@@ -11,17 +14,15 @@ int yylex();
 
 %}
 
-/* Token Declarations from Lexical Analyzer */
-%token PROGRAMME VAR BEGIN END IF ELSE FOR WHILE CONST INTEGER FLOAT TRUE FALSE ReadIn WriteIn
+%token PROGRAMME VAR BEGIN_TOKEN END IF ELSE FOR WHILE CONST INTEGER FLOAT TRUE FALSE ReadIn WriteIn
 %token IDF CST_INT CST_FLOAT OP_AFFECTATION OP_ARITH OP_LOGIC OP_COMP SEP_PAR SEP_COM SEP_PV SEP_END
 
-/* Grammar Starting Point */
 %start programme
 
 %%
 
 programme:
-    PROGRAMME declarations BEGIN instructions END SEP_END
+    PROGRAMME declarations BEGIN_TOKEN instructions END SEP_END
     {
         printf("Programme syntaxiquement correct\n");
     }
@@ -45,10 +46,10 @@ instructions:
 
 instruction:
     IDF OP_AFFECTATION expression SEP_PV
-    | IF condition BEGIN instructions END
-    | IF condition BEGIN instructions END ELSE BEGIN instructions END
-    | WHILE condition BEGIN instructions END
-    | FOR IDF OP_AFFECTATION expression SEP_PV condition SEP_PV expression BEGIN instructions END
+    | IF condition BEGIN_TOKEN instructions END
+    | IF condition BEGIN_TOKEN instructions END ELSE BEGIN_TOKEN instructions END
+    | WHILE condition BEGIN_TOKEN instructions END
+    | FOR IDF OP_AFFECTATION expression SEP_PV condition SEP_PV expression BEGIN_TOKEN instructions END
     | ReadIn SEP_PAR IDF SEP_PAR SEP_PV
     | WriteIn SEP_PAR expression SEP_PAR SEP_PV
     ;
