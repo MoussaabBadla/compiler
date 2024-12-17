@@ -1,7 +1,6 @@
 PROGRAMME Somme
 VAR {
-    INTEGER somme;
-    INTEGER i;
+    INTEGER somme , i;
 }
 BEGIN
     somme = 0; // this is comment 

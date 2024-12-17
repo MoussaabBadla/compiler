@@ -1,144 +1,233 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "synt.tab.h"
-#include "ts.h"
-
-
-
-// les lignes et colonnes
-
-int nb_ligne = 1;
-int nb_colonne = 1;
-
-
-// error handling here 
-
-void gestion_erreur(const char *type_erreur, const char *entite) {
-    printf("%s, line %d, column %d: %s\n", type_erreur, nb_ligne, nb_colonne, entite);
-}
-
-extern FILE *yyin;  
+    #include <stdio.h>
+    #include <string.h>
+    #include "synt.tab.h"
+    #include "ts.h"
+    extern int N ;
+    extern int C ;
 
 %}
-
-%option noyywrap
-
-
-PROGRAMME    { return PROGRAMME; }
-VAR          { return VAR; }
-BEGIN        { return BEGIN; }
-END          { return END. }
-IF           { return IF; }
-ELSE         { return ELSE; }
-FOR          { return FOR; }
-WHILE        { return WHILE; }
-CONST        { return CONST; }
-INTEGER      { return INTEGER; }
-FLOAT        { return FLOAT; }
-ReadIn       { return READIN; }
-WriteIn      { return WRITEIN; }
-
-IDF          [a-zA-Z][a-zA-Z0-9_]{0,6}
-CST_INT      [-+]?[0-9]{1,5}
-CST_FLOAT    [-+]?[0-9]+\.[0-9]+
-OP_ARITH     [\+\-\*/]
-OP_LOGIC     (\&\&|\|\||!)
-OP_COMP      (==|!=|<=|>=|<|>)
-OP_AFFECTATION "="
-SEP_PAR      [\(\)]
-SEP_COM      [,]
-SEP_PV       [;]
-SEP_END      [.]
-
-COMMENTAIRE_LIGNE    \/\/[^\n]*
-COMMENTAIRE_MULTI    \/\*([^*]|\*[^/])*\*\/
-ESPACE_TAB_NL    [ \t\n]
-
+chiffre [0-9]
+lettre [a-zA-Z]
+IDF {lettre}({lettre}|{chiffre}|[_]?)*
+CST_INTEGER [+-]?{chiffre}*
+CST_FLOAT [-+]?{chiffre}*"."{chiffre}*
+CHAINE \"(\\.|[^"^\n\\]*)*\"
 %%
+\n          { N++; C = 1; }  // Handle newlines: Increment line, reset column
+\t          { C += 4; }  // Handle tabs: Increment column by 4 (or adjust as needed)
+[ \t]       { C += strlen(yytext); } // Handle spaces and tabs (update column)
 
-{IDF}        { 
-                    printf("Identificateur: %s\n", yytext); 
-                    nb_colonne += yyleng; 
+"PROGRAMME" {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return mc_prog ;
+            }
+"VAR"   {       rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_var;
+        }
+"CONST"     {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext); 
+                return mc_cst;
+            }
+"BEGIN"     {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return mc_begin;
                 }
+"END"      {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_end;
+            }
+"INTEGER"  {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_integer;
+            }
+"FLOAT"     {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_float;
+            }
+"STRING"    {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_string;
+            }
+"IF"        {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_if;
+            }
 
-{CST_INT}    { 
-                    printf("Constante entière: %s\n", yytext); 
-                    nb_colonne += yyleng; 
+"ELSE"      {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_else;
                 }
+"WHILE"     {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_while;
+            }
+"FOR"       {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_for;
+            }
+"DO"        {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf("reconnue est %s \n", yytext);
+                C = C + strlen(yytext);
+                return mc_do;
+            }
+"WRITELN"   {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return mc_writeln;
+            }
+"READLN"    {   rechercher(yytext,"Mot Cle"," ",0,1) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return mc_readln;
+            }
+"<"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return inf;
+            }
+"<="        {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return inf_eg;
+            }
+">"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return sup;
+            }
+">="        {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return sup_eg;
+            }
+"=="        {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return eg;
+            }
+"!="        {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return diff;
+            }
+"+"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return plus;
+            }
+"-"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return moin;
+            }
+"*"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return foi;
+            }
+"/"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return division;
+            }
+","         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return vg;
+            }
+";"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return pvg;
+            }
+"="         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return aff;
+            }
+"{"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return ao;
+            }
+"}"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return af;
+            }
+":="        {   printf(" %s est reconnue  \n", yytext); C += strlen(yytext); return aff; }
+"("         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return po;
+            }
+")"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return pf;
+            }
+"&&"        {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return et_log;
+            }
+"||"        {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return ou_log;
+            }
+"!"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return non_log;
+            }
 
-{CST_FLOAT}  { 
-                    printf("Constante flottante: %s\n", yytext); 
-                    nb_colonne += yyleng; 
-                }
+":"         {   rechercher(yytext,"separateur"," ",0,2) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                return deuxp;
+            }
+{IDF}       {   rechercher(yytext,"identificateur"," ",0,0) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                yylval.string=strdup(yytext);
+                return idf;
+            }
+{CST_INTEGER}   {   rechercher(yytext,"constante","ENTIER",atoi(yytext),0) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                yylval.entier=atoi(yytext);
+                return cst_e;
+            }
+{CST_FLOAT}      {   rechercher(yytext,"constante","REEL",atof(yytext),0) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                yylval.reel=atof(yytext);
+                return cst_r;
+            }
+{CHAINE}    {   rechercher(yytext,"constante","STRING",atof(yytext),0) ;
+                printf(" %s est reconnue  \n", yytext);
+                C = C + strlen(yytext);
+                yylval.string=strdup(yytext);
+                return chaine;
+            }
 
-{OP_ARITH}   { 
-                    printf("Opérateur arithmétique: %s\n", yytext); 
-                    nb_colonne += yyleng; 
-                }
-
-{OP_LOGIC}   { 
-                    printf("Opérateur logique: %s\n", yytext); 
-                    nb_colonne += yyleng; 
-                }
-{OP_AFFECTATION} {
-                    printf("Opérateur d'affectation: %s\n", yytext);
-                    nb_colonne += yyleng;
-                }
-
-
-{OP_COMP}    { 
-                    printf("Opérateur de comparaison: %s\n", yytext); 
-                    nb_colonne += yyleng; 
-                }
-
-{SEP_PAR}    { 
-                    printf("Parenthèse: %s\n", yytext); 
-                    nb_colonne += yyleng; 
-                }
-
-{SEP_COM}    { 
-                    printf("Virgule: %s\n", yytext); 
-                    nb_colonne += yyleng; 
-                }
-
-{SEP_PV}     { 
-                    printf("Point-virgule:: %s\n", yytext); 
-                    nb_colonne += yyleng; 
-                }
-{SEP_END}     { 
-    printf("End instruction: %s\n", yytext); 
-    nb_colonne += yyleng; 
-}
+"//".*                 { /* Ignore single-line comments */ }
+"/\*([^*]|\*+[^*/])*\*/" { /* Ignore multi-line comments */ }
 
 
-{COMMENTAIRE_LIGNE}   { 
-                    nb_colonne += yyleng; 
-                }
-
-{COMMENTAIRE_MULTI}   { 
-                    nb_colonne += yyleng; 
-                }
-
-
-{ESPACE_TAB_NL}  { 
-                    if (yytext[0] == '\n') {
-                        nb_ligne++;
-                        nb_colonne = 1; 
-                    } else {
-                        nb_colonne += yyleng;
-                    }
-                }
-
-
-
-.           { 
-                    gestion_erreur("Erreur lexicale", yytext); 
-                    nb_colonne += yyleng; 
-                }
-
-%%
-
-
-
+.  {printf("caractere ivalide a la ligne %d et colone %d \n", N , C);} 
