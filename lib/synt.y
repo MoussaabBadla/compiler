@@ -193,10 +193,15 @@ EXP : EXP plus EXP {
         $$ = temp;
     }
     | EXP division EXP {
-        char* temp = generateTempVar();
-        addQuadruplet("/", $1, $3, temp);
-        $$ = temp;
+    char* temp = generateTempVar();
+    // Check if the second operand is "0" for integer or "0.0" for float
+    if (strcmp($3, "0") == 0 || strcmp($3, "0.0") == 0) {
+       printf("\033[1;33m⚠️  WARNING \033[0m\033[1;31m at line %d: Division by zero detected!\033[0m\n", N);
+       printf("\033[0;36m→ This operation may lead to undefined behavior or runtime errors\033[0m\n");
     }
+    addQuadruplet("/", $1, $3, temp);
+    $$ = temp;
+}
     | cst_e {
         char str[20];
         snprintf(str, sizeof(str), "%d", $1);
