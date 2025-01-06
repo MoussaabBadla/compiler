@@ -1,11 +1,9 @@
 PROGRAMME Somme
 VAR {
-    STRING somme , i;
+    STRING somme;
 }
 BEGIN
-    somme = 'qwe'; 
-    somme = i + i;
+    somme = 'qwe' + 'ewq';
+    somme = 5 + 5;
     WRITELN(somme);
-    i = '1';
-    WRITELN(i);
 END
