@@ -12,8 +12,8 @@
 // Define the structure for a quadruplet
 typedef struct {
     char op[OP_LEN];       // Operator
-    char arg1[ARG_LEN];    // First operand
-    char arg2[ARG_LEN];    // Second operand
+    char  arg1[ARG_LEN];    // First operand
+    char  arg2[ARG_LEN];    // Second operand
     char res[ARG_LEN];     // Result
 } Quadruplet;
 
@@ -28,7 +28,8 @@ static int quadIndex = 0;
  * @param arg2: The second operand (can be NULL).
  * @param res: The result.
  */
-void addQuadruplet(const char *op, const char *arg1, const char *arg2, const char *res) {
+void addQuadruplet( char *op,  char *arg1,  char *arg2,  char *res) {
+    printf("Adding quadruplet: %s %s %s %s\n", op, arg1, arg2, res);
     if (quadIndex >= MAX_QUADS) {
         fprintf(stderr, "Error: Quadruplet array overflow! Maximum limit is %d.\n", MAX_QUADS);
         exit(EXIT_FAILURE);
@@ -39,13 +40,12 @@ void addQuadruplet(const char *op, const char *arg1, const char *arg2, const cha
         exit(EXIT_FAILURE);
     }
 
-    // Safely copy operator
     strncpy(quadruplets[quadIndex].op, op, OP_LEN - 1);
     quadruplets[quadIndex].op[OP_LEN - 1] = '\0';
 
-    // Safely copy arguments and result
     if (arg1 && arg1 < (char*)0x555500000000) {
-        strncpy(quadruplets[quadIndex].arg1, arg1, ARG_LEN - 1);
+        
+        strncpy(quadruplets[quadIndex].arg1, arg1 , ARG_LEN - 1);
         quadruplets[quadIndex].arg1[ARG_LEN - 1] = '\0';
     } else {
         quadruplets[quadIndex].arg1[0] = '\0'; // Set empty string
@@ -64,9 +64,6 @@ void addQuadruplet(const char *op, const char *arg1, const char *arg2, const cha
     quadIndex++;
 }
 
-/**
- * Prints all the quadruplets in a table format.
- */
 void printQuadruplets() {
     printf("\n/** Quadruplets **/\n");
     printf("| Index | Operator           | Arg1                | Arg2                | Result              |\n");
@@ -90,5 +87,7 @@ void clearQuadruplets() {
     memset(quadruplets, 0, sizeof(quadruplets));
     printf("Quadruplets cleared successfully.\n");
 }
+
+
 
 #endif // QUADRUPLETS_H

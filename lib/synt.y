@@ -24,7 +24,8 @@
     int entier;
     float reel;
     char* string;
-    char* exp_val;    /* Add this for EXP values */
+    char* exp_val;
+
 
 }
 
@@ -33,24 +34,26 @@
 %left plus moin
 %left inf inf_eg sup sup_eg egale diff
 
+
 %token <string> mc_prog <string> mc_var <string> mc_cst <string> mc_begin <string> mc_end <string> mc_if <string> mc_else <string> mc_for
        <string> mc_do <string> mc_while <string> idf inf inf_eg sup sup_eg eg diff et_log ou_log non_log aff pvg plus moin
        foi division deuxp ao af po pf cst_e cst_r <string> chaine <reel> mc_float <entier> mc_integer <string> mc_string
        vg <string> mc_writeln <string> mc_readln <string> mc_then
        
 
-%type <exp_val> EXP
+
+%type <exp_val>  EXP 
 %type <string> INSTRUCTIONS
 
 %start S
 %%
 
 S : mc_prog idf mc_var ao VARIABLES af mc_begin INSTRUCTIONS mc_end  {
-        printf("\n Le programme est correcte syntaxiquement. \n");
+        printf("\n Le programme est correcte syntaxiquement. ^_^ Good Job ^_^ \n");
         YYACCEPT;
     }
   | mc_prog idf mc_begin INSTRUCTIONS mc_end  {
-        printf("\n Le programme est correcte syntaxiquement. \n");
+        printf("\n Le programme est correcte syntaxiquement. ^_^ Good Job ^_^ \n");
         YYACCEPT;
     }
 ;
@@ -74,7 +77,7 @@ LISTVAR : idf aff cst_e vg LISTVAR {
             if (CompType($1, "INTEGER") == 0) {
                 printf("****Erreur a la ligne %d et la colonne %d \n", N, C, $1);
             }
-            addQuadruplet("=", $2, NULL, $1);  // Adding quadruplet for assignment
+            addQuadruplet("=", $2, NULL, $1);  
         }
         | idf aff cst_e {
             if (rechercheNonDeclare($1) == 0) {
@@ -112,7 +115,7 @@ LISTVAR : idf aff cst_e vg LISTVAR {
             if (CompType($1, "FLOAT") == 0) {
                 printf("****Erreur a la ligne %d et la colonne %d : ICOMPATIBILITE DE TYPE de la variable %s ****\n", N, C, $1);
             }
-            addQuadruplet("=", $2, NULL, $1);  // Adding quadruplet for assignment
+            addQuadruplet("=", $2, NULL, $1);  
         }
         | idf aff cst_r {
             if (rechercheNonDeclare($1) == 0) {
@@ -123,7 +126,7 @@ LISTVAR : idf aff cst_e vg LISTVAR {
             if (CompType($1, "FLOAT") == 0) {
                 printf("****Erreur a la ligne %d et la colonne %d : ICOMPATIBILITE DE TYPE de la variable %s ****\n", N, C, $1);
             }
-            addQuadruplet("=", $2, NULL, $1);  // Adding quadruplet for assignment
+            addQuadruplet("=", $2, NULL, $1);  
         }
         | idf aff chaine vg LISTVAR {
             if (rechercheNonDeclare($1) == 0) {
@@ -134,7 +137,7 @@ LISTVAR : idf aff cst_e vg LISTVAR {
             if (CompType($1, "STRING") == 0) {
                 printf("****Erreur semantique a la ligne %d et la colonne %d : ICOMPATIBILITE DE TYPE de la variable %s ****\n", N, C, $1);
             }
-            addQuadruplet("=", $2, NULL, $1);  // Adding quadruplet for assignment
+            addQuadruplet("=", $2, NULL, $1); 
         }
         | idf aff chaine {
             if (rechercheNonDeclare($1) == 0) {
@@ -145,7 +148,7 @@ LISTVAR : idf aff cst_e vg LISTVAR {
             if (CompType($1, "STRING") == 0) {
                 printf("****Erreur a la ligne %d et la colonne %d : ICOMPATIBILITE DE TYPE de la variable %s ****\n", N, C, $1);
             }
-            addQuadruplet("=", $2, NULL, $1);  // Adding quadruplet for assignment
+            addQuadruplet("=", $2, NULL, $1); 
         }
 
 ;
@@ -177,16 +180,27 @@ LISTCONST : idf aff cst_e vg LISTCONST {
 ;
 
 EXP : EXP plus EXP {
-        addQuadruplet("+", $1, $3, "temp");
+       printf("Plus operation\n");
+       addQuadruplet("+", $1, $3, "temp");
+
+
+
     }
     | EXP moin EXP {
+
+
         addQuadruplet("-", $1, $3, "temp");
+    
+
     }
     | EXP foi EXP {
-        addQuadruplet("*", $1, $3, "temp");
+    addQuadruplet("*", $1, $3, "temp");
+
+
     }
     | EXP division EXP {
-        addQuadruplet("/", $1, $3, "temp");
+    addQuadruplet("/", $1, $3, "temp");
+
     }
     | cst_e {
         addQuadruplet("=", $1, NULL, "temp");
