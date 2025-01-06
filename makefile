@@ -26,12 +26,15 @@ build: $(buildDir)
 
 compile: $(buildDir)
 		mkdir -p $(compilerDir)
-		gcc $(buildDir)/lex.yy.c $(buildDir)/synt.tab.c $(symbolFile) -o $(compilerDir)/lexical $(CFLAGS)
-		 
+		gcc $(buildDir)/lex.yy.c $(buildDir)/synt.tab.c $(symbolFile)  -o $(compilerDir)/lexical $(CFLAGS) -lfl
+				 
 clean:
 		rm -rf $(buildDir)/*
 
 test: $(buildDir) compile
 		$(compiler) < $(testDir)/program.txt
-		
+
+debug:
+		gdb $(compiler)
+
 .PHONY: all build clean
