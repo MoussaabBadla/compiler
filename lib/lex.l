@@ -5,7 +5,6 @@
     #include "ts.h"
     extern int N ;
     extern int C ;
-
 %}
 chiffre [0-9]
 lettre [a-zA-Z]

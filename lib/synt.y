@@ -177,31 +177,24 @@ LISTCONST : idf aff cst_e vg LISTCONST {
 ;
 
 EXP : EXP plus EXP {
-        $$ = strdup("temp");  /* Set the value for EXP */
         addQuadruplet("+", $1, $3, "temp");
     }
     | EXP moin EXP {
-        $$ = strdup("temp");
         addQuadruplet("-", $1, $3, "temp");
     }
     | EXP foi EXP {
-        $$ = strdup("temp");
         addQuadruplet("*", $1, $3, "temp");
     }
     | EXP division EXP {
-        $$ = strdup("temp");
         addQuadruplet("/", $1, $3, "temp");
     }
     | cst_e {
-        $$ = strdup($1);
         addQuadruplet("=", $1, NULL, "temp");
     }
     | cst_r {
-        $$ = strdup($1);
         addQuadruplet("=", $1, NULL, "temp");
     }
     | idf {
-        $$ = strdup($1);
         addQuadruplet("=", $1, NULL, "temp");
     }
 ;
