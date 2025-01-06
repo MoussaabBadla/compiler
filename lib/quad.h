@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <ctype.h>
+#include <stdint.h>
 
 #define MAX_QUADS 1000    // Maximum number of quadruplets
 #define OP_LEN 20         // Maximum length of operators
@@ -11,26 +14,52 @@
 
 // Define the structure for a quadruplet
 typedef struct {
-    char op[OP_LEN];       // Operator
-    char arg1[ARG_LEN];    // First operand
-    char arg2[ARG_LEN];    // Second operand
-    char res[ARG_LEN];     // Result
+    char op[OP_LEN];      // Operator
+    char arg1[ARG_LEN];   // First operand
+    char arg2[ARG_LEN];   // Second operand
+    char res[ARG_LEN];    // Result
 } Quadruplet;
 
 // Static array to hold quadruplets
 static Quadruplet quadruplets[MAX_QUADS];
 static int quadIndex = 0;
+static int tempVarCount = 0;
 
-/**
- * Adds a new quadruplet to the array.
- * @param op: The operator.
- * @param arg1: The first operand (can be NULL).
- * @param arg2: The second operand (can be NULL).
- * @param res: The result.
- */
-void addQuadruplet(const char *op, const char *arg1, const char *arg2, const char *res) {
+// Helper function to check if a string is a number
+bool isNumber(const char* str) {
+    if (!str || *str == '\0') return false;
+    char* endptr;
+    strtod(str, &endptr);
+    return *endptr == '\0';
+}
+
+// Helper function to convert int to string
+char* generateTempVar() {
+    static char tempVar[20];
+    snprintf(tempVar, sizeof(tempVar), "T%d", tempVarCount++);
+    return tempVar;
+}
+
+// Helper function to convert void* to string representation
+void convertToString(char* dest, size_t destSize, const void* arg) {
+    if (!arg) {
+        dest[0] = '\0';
+        return;
+    }
+    
+    // Check if arg is a string pointer first
+    if (((uintptr_t)arg & 0xFFFFFFFF00000000) != 0) {
+        strncpy(dest, (const char*)arg, destSize - 1);
+    } else {
+        // Treat as integer
+        snprintf(dest, destSize, "%d", (int)(uintptr_t)arg);
+    }
+    dest[destSize - 1] = '\0';
+}
+
+void addQuadruplet(char* op, void* arg1, void* arg2, char* res) {
     if (quadIndex >= MAX_QUADS) {
-        fprintf(stderr, "Error: Quadruplet array overflow! Maximum limit is %d.\n", MAX_QUADS);
+        fprintf(stderr, "Error: Quadruplet array overflow!\n");
         exit(EXIT_FAILURE);
     }
 
@@ -39,34 +68,40 @@ void addQuadruplet(const char *op, const char *arg1, const char *arg2, const cha
         exit(EXIT_FAILURE);
     }
 
-    // Safely copy operator
+    // Copy operator
     strncpy(quadruplets[quadIndex].op, op, OP_LEN - 1);
     quadruplets[quadIndex].op[OP_LEN - 1] = '\0';
 
-    // Safely copy arguments and result
-    if (arg1 && arg1 < (char*)0x555500000000) {
-        strncpy(quadruplets[quadIndex].arg1, arg1, ARG_LEN - 1);
-        quadruplets[quadIndex].arg1[ARG_LEN - 1] = '\0';
-    } else {
-        quadruplets[quadIndex].arg1[0] = '\0'; // Set empty string
-    }
+    // Convert and copy arg1
+    convertToString(quadruplets[quadIndex].arg1, ARG_LEN, arg1);
 
-    if (arg2 && arg2 < (char*)0x555500000000) {
-        strncpy(quadruplets[quadIndex].arg2, arg2, ARG_LEN - 1);
-        quadruplets[quadIndex].arg2[ARG_LEN - 1] = '\0';
-    } else {
-        quadruplets[quadIndex].arg2[0] = '\0'; // Set empty string
-    }
+    // Convert and copy arg2
+    convertToString(quadruplets[quadIndex].arg2, ARG_LEN, arg2);
 
-    strncpy(quadruplets[quadIndex].res, res, ARG_LEN - 1);
+    // Handle arithmetic operations
+    if (strcmp(op, "+") == 0 || strcmp(op, "-") == 0 || 
+        strcmp(op, "*") == 0 || strcmp(op, "/") == 0) {
+        // For arithmetic operations, create a new temp variable if result is "temp"
+        if (strcmp(res, "temp") == 0) {
+            strncpy(quadruplets[quadIndex].res, generateTempVar(), ARG_LEN - 1);
+        } else {
+            strncpy(quadruplets[quadIndex].res, res, ARG_LEN - 1);
+        }
+    } else {
+        // For other operations, use the provided result
+        strncpy(quadruplets[quadIndex].res, res, ARG_LEN - 1);
+    }
     quadruplets[quadIndex].res[ARG_LEN - 1] = '\0';
+
+    printf("Generated quadruplet: (%s, %s, %s, %s)\n", 
+           quadruplets[quadIndex].op,
+           quadruplets[quadIndex].arg1,
+           quadruplets[quadIndex].arg2,
+           quadruplets[quadIndex].res);
 
     quadIndex++;
 }
 
-/**
- * Prints all the quadruplets in a table format.
- */
 void printQuadruplets() {
     printf("\n/** Quadruplets **/\n");
     printf("| Index | Operator           | Arg1                | Arg2                | Result              |\n");
@@ -82,13 +117,10 @@ void printQuadruplets() {
     }
 }
 
-/**
- * Clears all quadruplets from the array.
- */
 void clearQuadruplets() {
     quadIndex = 0;
+    tempVarCount = 0;
     memset(quadruplets, 0, sizeof(quadruplets));
-    printf("Quadruplets cleared successfully.\n");
 }
 
 #endif // QUADRUPLETS_H

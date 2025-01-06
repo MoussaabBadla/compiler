@@ -26,7 +26,7 @@ build: $(buildDir)
 
 compile: $(buildDir)
 		mkdir -p $(compilerDir)
-		gcc $(buildDir)/lex.yy.c $(buildDir)/synt.tab.c $(symbolFile)  -o $(compilerDir)/lexical $(CFLAGS) -lfl
+		gcc $(buildDir)/lex.yy.c $(buildDir)/synt.tab.c $(symbolFile)  -o $(compilerDir)/lexical $(CFLAGS) 
 				 
 clean:
 		rm -rf $(buildDir)/*

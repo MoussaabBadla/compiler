@@ -1,25 +1,9 @@
 PROGRAMME Somme
 VAR {
-    INTEGER somme , i;
+    STRING somme;
 }
 BEGIN
-    somme = 0; // this is comment 
-    
-
-    FOR (i:1:1:i<=10) {
-        somme = somme + i * 2;
-    }
-
+    somme = 'qwe' + 'ewq';
+    somme = 5 / 0;
     WRITELN(somme);
-
-    i = 1;
-    WHILE (i <= 5) {
-        WRITELN(i);
-        i = i + 1;
-        FOR (i:1:1:i<=10) {
-        somme = somme + i * 2;
-        
-    }
-    }
-
 END
