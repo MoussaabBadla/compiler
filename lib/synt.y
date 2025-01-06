@@ -25,8 +25,6 @@
     float reel;
     char* string;
     char* exp_val;
-
-
 }
 
 
@@ -180,39 +178,39 @@ LISTCONST : idf aff cst_e vg LISTCONST {
 ;
 
 EXP : EXP plus EXP {
-       printf("Plus operation\n");
-       addQuadruplet("+", $1, $3, "temp");
-
-
-
+        char* temp = generateTempVar();
+        addQuadruplet("+", $1, $3, temp);
+        $$ = temp;
     }
     | EXP moin EXP {
-
-
-        addQuadruplet("-", $1, $3, "temp");
-    
-
+        char* temp = generateTempVar();
+        addQuadruplet("-", $1, $3, temp);
+        $$ = temp;
     }
     | EXP foi EXP {
-    addQuadruplet("*", $1, $3, "temp");
-
-
+        char* temp = generateTempVar();
+        addQuadruplet("*", $1, $3, temp);
+        $$ = temp;
     }
     | EXP division EXP {
-    addQuadruplet("/", $1, $3, "temp");
-
+        char* temp = generateTempVar();
+        addQuadruplet("/", $1, $3, temp);
+        $$ = temp;
     }
     | cst_e {
-        addQuadruplet("=", $1, NULL, "temp");
+        char str[20];
+        snprintf(str, sizeof(str), "%d", $1);
+        $$ = strdup(str);
     }
     | cst_r {
-        addQuadruplet("=", $1, NULL, "temp");
+        char str[20];
+        snprintf(str, sizeof(str), "%f", $1);
+        $$ = strdup(str);
     }
     | idf {
-        addQuadruplet("=", $1, NULL, "temp");
+        $$ = $1;
     }
-;
-
+    ;
 INSTRUCTIONS : idf aff EXP pvg INSTRUCTIONS {
                 addQuadruplet("=", $3, NULL, $1); 
                 }
