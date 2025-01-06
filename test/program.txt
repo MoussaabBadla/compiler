@@ -4,6 +4,6 @@ VAR {
 }
 BEGIN
     somme = 'qwe' + 'ewq';
-    somme = 5 + 5;
+    somme = 5 / 0;
     WRITELN(somme);
 END
