@@ -5,4 +5,3 @@ COPY . .
 
 
 CMD ["make", "all"]
-
